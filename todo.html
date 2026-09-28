@@ -1,0 +1,316 @@
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <style>
+        :root {
+            --ink: #0f2942;
+            --deep: #123a63;
+            --primary: #1c5d99;
+            --primary-dark: #0e3d6b;
+            --primary-light: #4a8fc2;
+            --sky: #eaf3fb;
+            --sky-mid: #d3e6f5;
+            --line: #bcd7ec;
+            --paper: #ffffff;
+            --page-bg-top: #dbeafe;
+            --page-bg-bottom: #f3f8fd;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(180deg, var(--page-bg-top) 0%, var(--page-bg-bottom) 45%);
+            color: var(--ink);
+            padding: 48px 20px 64px;
+        }
+
+        h1 {
+            margin: 0 0 28px;
+            font-size: 2.1rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--primary-dark);
+        }
+
+        #taskinput {
+            width: min(360px, 80vw);
+            padding: 12px 16px;
+            border: 2px solid var(--line);
+            border-radius: 10px 0 0 10px;
+            border-right: none;
+            font-size: 1rem;
+            background: var(--paper);
+            color: var(--ink);
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+
+        #taskinput:focus {
+            border-color: var(--primary);
+        }
+
+        #addbutton {
+            padding: 12px 22px;
+            border: 2px solid var(--primary);
+            border-radius: 0 10px 10px 0;
+            background: var(--primary);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+
+        #addbutton:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        br {
+            display: none;
+        }
+
+        body > div:first-of-type {
+            margin-top: 24px;
+            display: flex;
+            gap: 8px;
+            background: var(--sky);
+            padding: 6px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+        }
+
+        #completebtn,
+        #incompletebtn,
+        #alltaskbtn {
+            padding: 9px 18px;
+            border: none;
+            border-radius: 8px;
+            background: transparent !important;
+            color: var(--primary-dark);
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        #completebtn:hover,
+        #incompletebtn:hover,
+        #alltaskbtn:hover {
+            background: var(--sky-mid) !important;
+        }
+
+        /* JS sets these three buttons' background-color inline to "blue" or "white" to mark
+           which view is active; re-skin those exact inline states without touching the JS. */
+        #completebtn[style*="blue"],
+        #incompletebtn[style*="blue"],
+        #alltaskbtn[style*="blue"] {
+            background: var(--primary) !important;
+            color: #fff !important;
+        }
+
+        #container {
+            margin-top: 26px;
+            width: min(480px, 90vw);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        #taskitem {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-left: 4px solid var(--primary-light);
+            border-radius: 10px;
+            padding: 12px 14px;
+            box-shadow: 0 1px 3px rgba(18, 58, 99, 0.08);
+        }
+
+        #taskitem input[type="checkbox"] {
+            width: 19px;
+            height: 19px;
+            accent-color: var(--primary);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        #taskitem p {
+            margin: 0;
+            flex: 1;
+            font-size: 1rem;
+            color: var(--ink);
+            word-break: break-word;
+        }
+
+        #taskitem p[style*="line-through"] {
+            color: #7ea3c4;
+        }
+
+        #taskitem button {
+            border: 1px solid var(--line);
+            background: var(--sky);
+            color: var(--primary-dark);
+            padding: 6px 12px;
+            border-radius: 7px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        #taskitem button:hover {
+            background: #e6534f;
+            border-color: #e6534f;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>My dairy</h1>
+    <input id="taskinput" />
+    <button id="addbutton">Add</button>
+    <br>
+
+    <div>
+    <button style="background-color: white;" id="completebtn">Complete tasks</button>
+    <button style="background-color: white;" id="incompletebtn">Incomplete tasks</button>
+    <button style="background-color: white;" id=alltaskbtn>All tasks</button>
+    </div>
+    <div id="container"></div>
+
+    <script>
+        //grab items
+        let addbtn = document.getElementById("addbutton")
+        let taskinput = document.getElementById("taskinput")
+        let container = document.getElementById("container")
+        let allbtn = document.getElementById("alltaskbtn")
+        let incompletebtn = document.getElementById("incompletebtn")
+        let completebtn = document.getElementById("completebtn")
+
+        let alltask = [] //we use this list to store all tasks
+        if (localStorage.getItem("stored tasks")){
+            alltask=JSON.parse(localStorage.getItem("stored tasks"))
+            showtask()
+        }
+
+            //events
+            addbtn.addEventListener("click", triggerAdd)
+        allbtn.addEventListener("click", showtask)
+        incompletebtn.addEventListener("click", showincompletetask)
+        completebtn.addEventListener("click", showcompletetask)
+
+        function triggerAdd() {
+            console.log(taskinput.value);
+            //store the new task
+            let dict = {
+                name: taskinput.value,
+                complete: false
+            }
+            alltask.push(dict)
+            showtask()
+            console.log(alltask)
+            localStorage.setItem("stored tasks", JSON.stringify(alltask))
+        }
+
+        function triggerdone(number) {
+            console.log("done", number)
+            alltask[number].complete = true
+            localStorage.setItem("stored tasks", JSON.stringify(alltask))
+            showtask()
+        }
+
+
+        function triggerundone(number) {
+            console.log("undone", number)
+            alltask[number].complete = false
+            localStorage.setItem("stored tasks", JSON.stringify(alltask))
+
+            showtask()
+        }
+
+        function showincompletetask() {
+            incompletebtn.style.backgroundColor = "blue"
+            allbtn.style.backgroundColor = "white"
+            completebtn.style.backgroundColor = "white"
+            container.innerHTML = ""
+            for (let number = 0; number < alltask.length; number += 1) {
+                if (alltask[number].complete == false) {
+                    //to do: show all the tasks without a tick or a slash
+                    let template = `<div id="taskitem"><input id= ${number} type=checkbox>` + "<p>" + alltask[number].name + "</p>"+`<button onclick ="triggerdelete(${number})">Delete</button></div>`
+                    container.insertAdjacentHTML("beforeend", template);
+                    let input = document.getElementById(`${number}`)
+                    input.addEventListener("click", triggerdone.bind(null, number))
+                }
+
+            }
+        }
+
+        function showcompletetask() {
+
+            incompletebtn.style.backgroundColor = "white"
+            allbtn.style.backgroundColor = "white"
+            completebtn.style.backgroundColor = "blue"
+            container.innerHTML = ""
+            for (let number = 0; number < alltask.length; number += 1) {
+                if (alltask[number].complete == true) {
+                    //to do: show all the tasks without a tick or a slash
+                    let template = `<div id="taskitem"><input id= ${number} type=checkbox checked>` + "<p style='text-decoration:line-through'>" + alltask[number].name + "</p>"+`<button onclick ="triggerdelete(${number})">Delete</button></div>`
+                    container.insertAdjacentHTML("beforeend", template);
+                    let input = document.getElementById(`${number}`)
+                    input.addEventListener("click", triggerdone.bind(null, number))
+                }
+            }
+        }
+
+        function triggerdelete(number) {
+            alltask.splice(number,1)
+            localStorage.setItem("stored tasks", JSON.stringify(alltask))
+            showtask()
+
+        }
+
+
+        function showtask() {
+            incompletebtn.style.backgroundColor = "white"
+            allbtn.style.backgroundColor = "blue"
+            completebtn.style.backgroundColor = "white"
+            container.innerHTML = ""
+            for (let number = 0; number < alltask.length; number += 1) {
+
+
+
+
+                if (alltask[number].complete == false) {
+                    //to do: show all the tasks without a tick or a slash
+                    let template = `<div id="taskitem"><input id= ${number} type=checkbox>` + "<p>" + alltask[number].name + "</p>"+`<button onclick ="triggerdelete(${number})">Delete</button></div>`
+                    container.insertAdjacentHTML("beforeend", template);
+                    let input = document.getElementById(`${number}`)
+                    input.addEventListener("click", triggerdone.bind(null, number))
+                }
+
+                else if (alltask[number].complete == true) {
+                    //TODO:add the tick and the slash on the task
+                    let template = `<div id="taskitem"><input id= ${number} type=checkbox checked>` + "<p style='text-decoration:line-through'>" + alltask[number].name + "</p>"+`<button onclick ="triggerdelete(${number})">Delete</button></div>`
+                    container.insertAdjacentHTML("beforeend", template);
+                    let input = document.getElementById(`${number}`)
+                    input.addEventListener("click", triggerundone.bind(null, number))
+                }
+            }
+        }
+    </script>
+</body>

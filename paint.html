@@ -1,0 +1,97 @@
+<head>
+    <style>
+        canvas{
+            border: 2px solid blue
+        }
+        #redbtn {
+            Background: red;
+            border-radius:50%;
+            width: 40px;
+            height:40px;
+        }
+        #bluebtn {
+            Background: blue;
+            border-radius:50%;
+            Width: 40px;
+            height: 40px;
+        }
+        #Greenbtn {
+            Background: green;
+            border-radius:50%;
+            width:40px;
+            Height:40px;
+        }
+    </style>
+</head>
+<button id="redbtn"></button>
+<button id="bluebtn"></button>
+<button id="Greenbtn"></button>
+<br />
+<input placeholder="enter brush size" id="Size Input">
+<body>
+<h1>Paint</h1>
+<canvas id="Paint" width="800" height="400"></canvas>
+</body>
+<script>
+    // you can us javascript here
+    console.log("Hello")
+    //grap the canvas and save it in the variable
+   let Paint = document.getElementById("Paint")
+   let brush = Paint.getContext("2d");
+   let isdrawing = false; //new
+
+    //Events
+    function triggerDown(info){
+        isdrawing=true //new allow someone to draw
+        console.log("Somone pressed the mouse button")
+        brush.moveTo(  info.offsetX,  info.offsetY)   // new
+        brush.beginPath() // this tarts drawing
+    }
+    function triggerMove(info){
+        console.log("Someone is moving the mouse")
+        if(isdrawing==true)
+    {
+        brush.lineTo( info.offsetX,info.offsetY)   // new
+        brush.stroke() //shows a line 
+    }
+    }
+
+    function triggerup()//new
+    {
+        isdrawing=false //new
+    }
+
+    Paint.addEventListener("mousedown", triggerDown)
+    Paint.addEventListener("mousemove", triggerMove)
+    Paint.addEventListener("mouseup", triggerup)
+
+    //grab the buttons
+    let redbtn = document.getElementById("redbtn");
+    redbtn.addEventListener("click", triggerred)
+
+    let bluebtn = document.getElementById("bluebtn");
+    bluebtn.addEventListener("click", triggerblue)
+
+    let Greenbtn = document.getElementById("Greenbtn");
+    Greenbtn.addEventListener("click", triggerGreen)
+
+
+    function triggerred(){
+        brush.strokeStyle = "red"
+    }
+
+    function triggerblue(){
+        brush.strokeStyle = "blue"
+    }
+
+    function triggerGreen(){
+        brush.strokeStyle = "Green"
+    }
+
+let Sizeinput = document.getElementById("Size Input");
+Sizeinput.addEventListener('input', triggerSize);
+
+function triggerSize(){
+    brush.lineWidth = Sizeinput.value
+}
+</script>
