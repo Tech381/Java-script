@@ -26,31 +26,17 @@
 <table>
   <tr>
     <td align="center" width="33%">
-      <img src="paint.png" alt="Paint app screenshot"/><br />
+      <img src="Screenshot 2026-10-01 at 17.48.28.png" alt="Paint app screenshot"/><br />
       <sub><b>🎨 Paint App</b></sub>
     </td>
     <td align="center" width="33%">
-      <img src="task.png" alt="Task app screenshot"/><br />
+      <img src="Screenshot 2026-10-01 at 17.48.53.png" alt="Task app screenshot"/><br />
       <sub><b>✅ Task App</b></sub>
     </td>
-    <td align="center" width="33%">
-      <img src="spy.png" alt="Spy app screenshot"/><br />
-      <sub><b>🕵️ Spy App</b></sub>
     </td>
   </tr>
   <tr>
-    <td align="center" width="33%">
-      <img src="weather-1.png" alt="Weather app screenshot 1"/><br />
-      <sub><b>🌦️ Weather App</b></sub>
-    </td>
-    <td align="center" width="33%">
-      <img src="weather-2.png" alt="Weather app screenshot 2"/><br />
-      <sub><b>🌦️ Weather App</b></sub>
-    </td>
-    <td align="center" width="33%">
-      <img src="weather-3.png" alt="Weather app screenshot 3"/><br />
-      <sub><b>🌦️ Weather App</b></sub>
-    </td>
+
   </tr>
 </table>
 
